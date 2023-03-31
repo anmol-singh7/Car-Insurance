@@ -45,5 +45,47 @@ router.delete('/cars/:id', async (req, res) => {
   }
 });
 
+router.post('/owners', async (req, res) => {
+  const { name, address, phone } = req.body;
+  const sql = 'INSERT INTO owner (name, address, phone) VALUES (?, ?, ?)';
+  try {
+    const result = await db.query(sql, [name, address, phone]);
+    res.json({ message: 'Owner added successfully', id: result.insertId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/owners/:id', async (req, res) => {
+  const ownerId = req.params.id;
+  const { name, address, phone } = req.body;
+  const sql = 'UPDATE owner SET name = ?, address = ?, phone = ? WHERE id = ?';
+  try {
+    const result = await db.query(sql, [name, address, phone, ownerId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Owner not found' });
+    } else {
+      res.json({ message: 'Owner updated successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/owners/:id', async (req, res) => {
+  const ownerId = req.params.id;
+  const sql = 'DELETE FROM owner WHERE id = ?';
+  try {
+    const result = await db.query(sql, [ownerId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Owner not found' });
+    } else {
+      res.json({ message: 'Owner deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;
