@@ -87,5 +87,16 @@ router.delete('/owners/:id', async (req, res) => {
   }
 });
 
+router.post('/policies', async (req, res) => {
+  const { start_date, end_date, premium, owner_id } = req.body;
+  const sql = 'INSERT INTO insurance_policy (start_date, end_date, premium, owner_id) VALUES (?, ?, ?, ?)';
+  try {
+    const result = await db.query(sql, [start_date, end_date, premium, owner_id]);
+    res.json({ message: 'Policy added successfully', id: result.insertId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;
