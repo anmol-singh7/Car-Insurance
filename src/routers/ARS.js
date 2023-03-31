@@ -98,5 +98,80 @@ router.post('/policies', async (req, res) => {
   }
 });
 
+router.put('/policies/:id', async (req, res) => {
+  const policyId = req.params.id;
+  const { start_date, end_date, premium, owner_id } = req.body;
+  const sql = 'UPDATE insurance_policy SET start_date = ?, end_date = ?, premium = ?, owner_id = ? WHERE id = ?';
+  try {
+    const result = await db.query(sql, [start_date, end_date, premium, owner_id, policyId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Policy not found' });
+    } else {
+      res.json({ message: 'Policy updated successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/policies/:id', async (req, res) => {
+  const policyId = req.params.id;
+  const sql = 'DELETE FROM insurance_policy WHERE id = ?';
+  try {
+    const result = await db.query(sql, [policyId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Policy not found' });
+    } else {
+      res.json({ message: 'Policy deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/claims', async (req, res) => {
+  const { date_of_incident, workshop_id, driver_name, car_id } = req.body;
+  const sql = 'INSERT INTO claim (date_of_incident, workshop_id, driver_name, car_id) VALUES (?, ?, ?, ?)';
+  try {
+    const result = await db.query(sql, [date_of_incident, workshop_id, driver_name, car_id]);
+    res.json({ message: 'Claim added successfully', id: result.insertId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+router.put('/claims/:id', async (req, res) => {
+  const claimId = req.params.id;
+  const { date_of_incident, workshop_id, driver_name, car_id } = req.body;
+  const sql = 'UPDATE claim SET date_of_incident = ?, workshop_id = ?, driver_name = ?, car_id = ? WHERE id = ?';
+  try {
+    const result = await db.query(sql, [date_of_incident, workshop_id, driver_name, car_id, claimId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Claim not found' });
+    } else {
+      res.json({ message: 'Claim updated successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+router.delete('/claims/:id', async (req, res) => {
+  const claimId = req.params.id;
+  const sql = 'DELETE FROM claim WHERE id = ?';
+  try {
+    const result = await db.query(sql, [claimId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Claim not found' });
+    } else {
+      res.json({ message: 'Claim deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;
