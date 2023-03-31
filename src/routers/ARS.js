@@ -173,5 +173,46 @@ router.delete('/claims/:id', async (req, res) => {
   }
 });
 
+router.post('/workshops', async (req, res) => {
+  const { name, address, phone } = req.body;
+  const sql = 'INSERT INTO workshop (name, address, phone) VALUES (?, ?, ?)';
+  try {
+    const result = await db.query(sql, [name, address, phone]);
+    res.json({ message: 'Workshop added successfully', id: result.insertId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
+
+router.put('/workshops/:id', async (req, res) => {
+  const workshopId = req.params.id;
+  const { name, address, phone } = req.body;
+  const sql = 'UPDATE workshop SET name = ?, address = ?, phone = ? WHERE id = ?';
+  try {
+    const result = await db.query(sql, [name, address, phone, workshopId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Workshop not found' });
+    } else {
+      res.json({ message: 'Workshop updated successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/workshops/:id', async (req, res) => {
+  const workshopId = req.params.id;
+  const sql = 'DELETE FROM workshop WHERE id = ?';
+  try {
+    const result = await db.query(sql, [workshopId]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Workshop not found' });
+    } else {
+      res.json({ message: 'Workshop deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 module.exports = router;
